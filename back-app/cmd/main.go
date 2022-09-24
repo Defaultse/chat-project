@@ -5,6 +5,7 @@ import (
 	"chat-project-go/internal/drivers/mssql"
 	"chat-project-go/internal/repository"
 	"chat-project-go/internal/service"
+	"chat-project-go/pkg/websocket"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,10 +22,16 @@ func main() {
 	chatService := service.NewChatService()
 	services := app.NewServices(authService, chatService)
 
+	pool := websocket.NewPool()
+	go pool.Start()
+
 	router := gin.Default()
 
 	router.POST("/register/", services.Register)
 	router.POST("/login/", services.Login)
-	router.POST("/ws/chat/", services.ChatReader)
+	// router.GET("/ws", websocket.ServeWs)
+	router.GET("/ws", func(ctx *gin.Context) {
+		services.ServeWs(pool, ctx)
+	})
 	router.Run()
 }
