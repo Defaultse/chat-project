@@ -1,54 +1,25 @@
 package app
 
-// func (s *Services) ChatReader(conn *gin.Context) {
-// 	fmt.Println("here")
+import (
+	"chat-project-go/pkg/websocket"
+	"fmt"
 
-// 	ws, err := upgrader.Upgrade(conn.Writer, conn.Request, nil)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return
-// 	}
-// 	defer ws.Close()
+	"github.com/gin-gonic/gin"
+)
 
-// 	go func(ws *websocket.Conn) {
-// 		for {
-// 			//Read Message from client
-// 			mt, message, err := ws.ReadMessage()
-// 			if err != nil {
-// 				fmt.Println(err)
-// 				break
-// 			}
-// 			//If client message is ping will return pong
-// 			if string(message) == "ping" {
-// 				message = []byte("pong")
-// 			}
-// 			//Response message to client
-// 			err = ws.WriteMessage(mt, message)
-// 			if err != nil {
-// 				fmt.Println(err)
-// 				break
-// 			}
-// 		}
-// 	}(ws)
-// }
+func (s *Services) ServeWsChat(pool *websocket.Pool, conn *gin.Context) {
+	fmt.Println("WebSocket Endpoint")
+	wsConn, err := websocket.Upgrade(conn.Writer, conn.Request)
 
-// func wsEndoint(w http.ResponseWriter, r *http.Request) {
-// 	upgrader.CheckOrigin = func(r *http.Request) bool {
-// 		return true
-// 	}
+	if err != nil {
+		fmt.Fprintf(conn.Writer, "%+v\n", err)
+	}
 
-// 	ws, err := upgrader.Upgrade(w, r, nil)
+	client := &websocket.Client{
+		Conn: wsConn,
+		Pool: pool,
+	}
 
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	log.Println("Client Successfully Connected...")
-
-// 	err = ws.WriteMessage(1, []byte("Hello, connected!"))
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	Reader(ws)
-// }
+	pool.Register <- client
+	client.Read()
+}

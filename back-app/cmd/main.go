@@ -33,5 +33,8 @@ func main() {
 	router.GET("/ws", func(ctx *gin.Context) {
 		services.ServeWs(pool, ctx)
 	})
+	router.GET("/ws/chat", func(ctx *gin.Context) {
+		services.ServeWs(pool, ctx)
+	})
 	router.Run()
 }
