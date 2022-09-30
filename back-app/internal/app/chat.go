@@ -1,25 +1,22 @@
 package app
 
-import (
-	"chat-project-go/pkg/websocket"
-	"fmt"
+import "chat-project-go/pkg/websocket"
 
-	"github.com/gin-gonic/gin"
-)
+func (s *Services) SendMessageToUser(message websocket.Message) {
+	// message.Body
+	// s.chatService.SendMessageToConversation()
+	// conn := s.wsPool.Clients["2016"]
+	// conn.WriteMessage()
+}
 
-func (s *Services) ServeWsChat(pool *websocket.Pool, conn *gin.Context) {
-	fmt.Println("WebSocket Endpoint")
-	wsConn, err := websocket.Upgrade(conn.Writer, conn.Request)
+func (s *Services) StartConversationWithUser(message websocket.Message) {
 
-	if err != nil {
-		fmt.Fprintf(conn.Writer, "%+v\n", err)
-	}
+}
 
-	client := &websocket.Client{
-		Conn: wsConn,
-		Pool: pool,
-	}
+func (s *Services) GetConversationMsgs(message websocket.Message) {
 
-	pool.Register <- client
-	client.Read()
+}
+
+func (s *Services) GetAllChatsLastMsg(message websocket.Message) {
+
 }
